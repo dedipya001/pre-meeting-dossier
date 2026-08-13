@@ -15,6 +15,23 @@ jobs:
   validate:
     name: Validate
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: dossier
+          POSTGRES_PASSWORD: dossier
+          POSTGRES_DB: dossier
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U dossier -d dossier"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://dossier:dossier@localhost:5432/dossier
 
     steps:
       - name: Checkout
@@ -29,10 +46,20 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Env var and secret leak check
+        run: npm run security:secrets
+
+      - name: Dependency security audit
+        run: npm run security:audit
+
+      - name: Database schema validation
+        run: npm run db:validate
+
       - name: Generate Prisma client
         run: npm run prisma:generate
-        env:
-          DATABASE_URL: postgresql://dossier:dossier@localhost:5432/dossier
+
+      - name: Database migration SQL check
+        run: npm run db:diff
 
       - name: Typecheck
         run: npm run typecheck
@@ -40,7 +67,7 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      - name: Test
+      - name: Unit and SQL injection tests
         run: npm test
 
       - name: Build
