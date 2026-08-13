@@ -1,0 +1,48 @@
+{
+  "name": "pre-meeting-dossier",
+  "version": "0.1.0",
+  "description": "Provider-agnostic pre-meeting intelligence MCP server",
+  "type": "module",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "tsx src/server.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/server.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev"
+  },
+  "keywords": [
+    "mcp",
+    "meetings",
+    "dossier"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@fastify/rate-limit": "^11.2.0",
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "@prisma/client": "^7.9.1",
+    "dotenv": "^17.2.1",
+    "fastify": "^5.5.0",
+    "ioredis": "^5.7.0",
+    "jsonwebtoken": "^9.0.3",
+    "pino": "^9.9.0",
+    "pino-pretty": "^13.1.1",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.33.0",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^24.2.1",
+    "eslint": "^9.33.0",
+    "prisma": "^7.9.1",
+    "tsx": "^4.20.4",
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.39.1",
+    "vitest": "^3.2.4"
+  }
+}

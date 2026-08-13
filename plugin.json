@@ -1,0 +1,18 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "Pre-Meeting Dossier",
+  "name_for_model": "pre_meeting_dossier",
+  "description_for_human": "Prepare for meetings with evidence-backed context from calendars, conversations, documents, and business records.",
+  "description_for_model": "Use this remote MCP server to retrieve normalized pre-meeting context. The server provides evidence and source references only; the model should synthesize the final dossier.",
+  "mcp_server": {
+    "url": "https://YOUR_PUBLIC_HOST/mcp",
+    "transport": "streamable_http"
+  },
+  "auth": {
+    "type": "oauth_or_bearer",
+    "authorization_url": "https://YOUR_PUBLIC_HOST/oauth/google/start",
+    "token_usage": "Authorization: Bearer <app token>"
+  },
+  "privacy_policy_url": "https://YOUR_PUBLIC_HOST/privacy",
+  "legal_info_url": "https://YOUR_PUBLIC_HOST/legal"
+}

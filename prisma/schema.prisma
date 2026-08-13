@@ -1,0 +1,91 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  displayName String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  connections ProviderConnection[]
+  auditEvents AuditEvent[]
+}
+
+model ProviderConnection {
+  id           String   @id @default(cuid())
+  userId       String
+  provider     String
+  capabilities String[]
+  status       String
+  tokenCiphertext String?
+  refreshTokenCiphertext String?
+  expiresAt    DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  user         User     @relation(fields: [userId], references: [id])
+}
+
+model OrganizationIdentity {
+  id        String   @id @default(cuid())
+  name      String
+  domain    String?
+  aliases   OrganizationAlias[]
+  createdAt DateTime @default(now())
+}
+
+model OrganizationAlias {
+  id             String @id @default(cuid())
+  organizationId String
+  value          String
+  organization   OrganizationIdentity @relation(fields: [organizationId], references: [id])
+}
+
+model PersonIdentity {
+  id           String   @id @default(cuid())
+  name         String?
+  email        String?
+  organization String?
+  aliases      PersonAlias[]
+  createdAt    DateTime @default(now())
+}
+
+model PersonAlias {
+  id       String @id @default(cuid())
+  personId String
+  value    String
+  person   PersonIdentity @relation(fields: [personId], references: [id])
+}
+
+model ExternalReference {
+  id         String   @id @default(cuid())
+  provider   String
+  sourceType String
+  externalId String
+  title      String?
+  url        String?
+  createdAt  DateTime @default(now())
+}
+
+model CachedSearchResult {
+  id        String   @id @default(cuid())
+  cacheKey  String   @unique
+  payload   Json
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model AuditEvent {
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String
+  provider  String?
+  metadata  Json?
+  createdAt DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [id])
+}
