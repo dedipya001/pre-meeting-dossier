@@ -158,19 +158,19 @@ export const ChangeItemSchema = z.object({
   sourceReference: SourceReferenceSchema
 });
 
-export type SearchPeopleInput = z.infer<typeof SearchPeopleInputSchema>;
+export type SearchPeopleInput = z.input<typeof SearchPeopleInputSchema>;
 export type Person = z.infer<typeof PersonSchema>;
-export type SearchOrganizationsInput = z.infer<typeof SearchOrganizationsInputSchema>;
+export type SearchOrganizationsInput = z.input<typeof SearchOrganizationsInputSchema>;
 export type Organization = z.infer<typeof OrganizationSchema>;
-export type SearchConversationsInput = z.infer<typeof SearchConversationsInputSchema>;
+export type SearchConversationsInput = z.input<typeof SearchConversationsInputSchema>;
 export type ConversationItem = z.infer<typeof ConversationItemSchema>;
-export type SearchDocumentsInput = z.infer<typeof SearchDocumentsInputSchema>;
+export type SearchDocumentsInput = z.input<typeof SearchDocumentsInputSchema>;
 export type DocumentItem = z.infer<typeof DocumentItemSchema>;
-export type SearchBusinessRecordsInput = z.infer<typeof SearchBusinessRecordsInputSchema>;
+export type SearchBusinessRecordsInput = z.input<typeof SearchBusinessRecordsInputSchema>;
 export type BusinessRecord = z.infer<typeof BusinessRecordSchema>;
-export type SearchActivityInput = z.infer<typeof SearchActivityInputSchema>;
+export type SearchActivityInput = z.input<typeof SearchActivityInputSchema>;
 export type ActivityItem = z.infer<typeof ActivityItemSchema>;
-export type SearchOpenItemsInput = z.infer<typeof SearchOpenItemsInputSchema>;
+export type SearchOpenItemsInput = z.input<typeof SearchOpenItemsInputSchema>;
 export type OpenItem = z.infer<typeof OpenItemSchema>;
-export type GetRecentChangesInput = z.infer<typeof GetRecentChangesInputSchema>;
+export type GetRecentChangesInput = z.input<typeof GetRecentChangesInputSchema>;
 export type ChangeItem = z.infer<typeof ChangeItemSchema>;

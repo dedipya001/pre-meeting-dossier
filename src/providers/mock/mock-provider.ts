@@ -37,7 +37,7 @@ export class MockProvider implements BaseProvider, CalendarProvider, Communicati
     return byRecency(mockEvents)
       .filter((event) => withinRange(event.start, input.start, input.end))
       .filter((event) => anyIncludes([event.title, event.description, ...event.attendees.map((a) => a.name), ...event.attendees.map((a) => a.organization)], input.query))
-      .slice(0, input.limit);
+      .slice(0, input.limit ?? 10);
   }
 
   async getEvent(eventId: string): Promise<NormalizedEvent | undefined> {
@@ -50,13 +50,13 @@ export class MockProvider implements BaseProvider, CalendarProvider, Communicati
       .filter((person) => !input.query || anyIncludes([person.name, person.email, person.title, person.organization], input.query))
       .filter((person) => !input.names?.length || input.names.some((name) => includesText(person.name, name)))
       .filter((person) => !input.emails?.length || input.emails.includes(person.email ?? ""))
-      .slice(0, input.limit);
+      .slice(0, input.limit ?? 10);
   }
 
   async searchOrganizations(input: SearchOrganizationsInput): Promise<Organization[]> {
     return mockOrganizations
       .filter((org) => anyIncludes([org.name, org.domain, org.description], input.query))
-      .slice(0, input.limit);
+      .slice(0, input.limit ?? 10);
   }
 
   async searchConversations(input: SearchConversationsInput): Promise<ConversationItem[]> {
@@ -66,7 +66,7 @@ export class MockProvider implements BaseProvider, CalendarProvider, Communicati
       .filter((item) => !input.organization || item.participants?.some((p) => p.email?.endsWith("@acme.com")) || includesText(item.summary, input.organization))
       .filter((item) => !input.participants?.length || input.participants.some((p) => anyIncludes([item.title, item.summary, ...(item.participants ?? []).flatMap((x) => [x.name, x.email])], p)))
       .filter((item) => !input.query || anyIncludes([item.title, item.summary, item.excerpt], input.query))
-      .slice(0, input.limit);
+      .slice(0, input.limit ?? 10);
   }
 
   async searchDocuments(input: SearchDocumentsInput): Promise<DocumentItem[]> {
@@ -75,7 +75,7 @@ export class MockProvider implements BaseProvider, CalendarProvider, Communicati
       .filter((doc) => !input.organization || anyIncludes([doc.title, doc.summary, doc.matchedContext], input.organization))
       .filter((doc) => !input.people?.length || input.people.some((person) => anyIncludes([doc.title, doc.summary, doc.matchedContext], person)))
       .filter((doc) => anyIncludes([doc.title, doc.summary, doc.matchedContext], input.query))
-      .slice(0, input.limit);
+      .slice(0, input.limit ?? 10);
   }
 
   async searchRecords(input: SearchBusinessRecordsInput): Promise<BusinessRecord[]> {
@@ -84,7 +84,7 @@ export class MockProvider implements BaseProvider, CalendarProvider, Communicati
       .filter((record) => !input.recordTypes?.length || input.recordTypes.includes(record.type))
       .filter((record) => !input.status?.length || input.status.includes(record.status ?? ""))
       .filter((record) => !input.query || anyIncludes([record.title, record.summary, record.type, record.status], input.query))
-      .slice(0, input.limit);
+      .slice(0, input.limit ?? 10);
   }
 
   async searchActivity(input: SearchActivityInput): Promise<ActivityItem[]> {
@@ -93,14 +93,14 @@ export class MockProvider implements BaseProvider, CalendarProvider, Communicati
       .filter((item) => !input.organization || includesText(item.organization, input.organization))
       .filter((item) => !input.people?.length || input.people.some((person) => item.people?.some((p) => includesText(p, person))))
       .filter((item) => !input.query || anyIncludes([item.title, item.summary, item.type], input.query))
-      .slice(0, input.limit);
+      .slice(0, input.limit ?? 10);
   }
 
   async searchOpenItems(input: SearchOpenItemsInput): Promise<OpenItem[]> {
     return mockOpenItems
       .filter((item) => !input.query || anyIncludes([item.title, item.summary, item.type, item.status], input.query))
       .filter((item) => !input.people?.length || input.people.some((person) => anyIncludes([item.owner?.name, item.owner?.email, item.summary], person)))
-      .slice(0, input.limit);
+      .slice(0, input.limit ?? 10);
   }
 
   async getRecentChanges(input: GetRecentChangesInput): Promise<ChangeItem[]> {

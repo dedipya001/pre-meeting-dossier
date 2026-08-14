@@ -29,5 +29,5 @@ export const GetEventContextInputSchema = z.object({
 });
 
 export type NormalizedEvent = z.infer<typeof NormalizedEventSchema>;
-export type GetUpcomingEventsInput = z.infer<typeof GetUpcomingEventsInputSchema>;
-export type GetEventContextInput = z.infer<typeof GetEventContextInputSchema>;
+export type GetUpcomingEventsInput = z.input<typeof GetUpcomingEventsInputSchema>;
+export type GetEventContextInput = z.input<typeof GetEventContextInputSchema>;

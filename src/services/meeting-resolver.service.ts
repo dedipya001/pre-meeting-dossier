@@ -14,7 +14,7 @@ export class MeetingResolver {
     const providers = this.registry.findByCapability<CalendarCapableProvider>("calendar");
     const result = await runProviders(providers, (provider) => provider.getUpcomingEvents(input));
     return {
-      events: byRecency(dedupeById(result.items)).slice(0, input.limit),
+      events: byRecency(dedupeById(result.items)).slice(0, input.limit ?? 10),
       partial: result.partial,
       providerErrors: result.providerErrors
     };
