@@ -26,4 +26,10 @@ describe("MockProvider", () => {
     const changes = await provider.getRecentChanges({ organization: "Acme Corporation" });
     expect(changes.map((change) => change.title)).toContain("Proposal V3 uploaded");
   });
+
+  it("returns default upcoming events when Inspector sends an empty input object", async () => {
+    const events = await provider.getUpcomingEvents({});
+    expect(events).toHaveLength(1);
+    expect(events[0].title).toBe("CPQ Architecture Review");
+  });
 });

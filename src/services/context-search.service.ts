@@ -54,30 +54,30 @@ export class ContextSearchService {
   async searchConversations(input: SearchConversationsInput) {
     const providers = this.registry.findByCapability<CommunicationsCapable>("communications");
     const result = await runProviders(providers, (provider) => provider.searchConversations(input));
-    return { items: byRecency(dedupeById(result.items as ConversationItem[])).slice(0, input.limit), partial: result.partial, providerErrors: result.providerErrors };
+    return { items: byRecency(dedupeById(result.items as ConversationItem[])).slice(0, input.limit ?? 10), partial: result.partial, providerErrors: result.providerErrors };
   }
 
   async searchDocuments(input: SearchDocumentsInput) {
     const providers = this.registry.findByCapability<DocumentsCapable>("documents");
     const result = await runProviders(providers, (provider) => provider.searchDocuments(input));
-    return { documents: byRecency(dedupeById(result.items as DocumentItem[])).slice(0, input.limit), partial: result.partial, providerErrors: result.providerErrors };
+    return { documents: byRecency(dedupeById(result.items as DocumentItem[])).slice(0, input.limit ?? 10), partial: result.partial, providerErrors: result.providerErrors };
   }
 
   async searchBusinessRecords(input: SearchBusinessRecordsInput) {
     const providers = this.registry.findByCapability<BusinessCapable>("business_records");
     const result = await runProviders(providers, (provider) => provider.searchRecords(input));
-    return { records: byRecency(dedupeById(result.items as BusinessRecord[])).slice(0, input.limit), partial: result.partial, providerErrors: result.providerErrors };
+    return { records: byRecency(dedupeById(result.items as BusinessRecord[])).slice(0, input.limit ?? 10), partial: result.partial, providerErrors: result.providerErrors };
   }
 
   async searchActivity(input: SearchActivityInput) {
     const providers = this.registry.findByCapability<ActivityCapable>("activity");
     const result = await runProviders(providers, (provider) => provider.searchActivity(input));
-    return { items: byRecency(dedupeById(result.items as ActivityItem[])).slice(0, input.limit), partial: result.partial, providerErrors: result.providerErrors };
+    return { items: byRecency(dedupeById(result.items as ActivityItem[])).slice(0, input.limit ?? 10), partial: result.partial, providerErrors: result.providerErrors };
   }
 
   async searchOpenItems(input: SearchOpenItemsInput) {
     const providers = this.registry.findByCapability<OpenItemsCapable>("open_items");
     const result = await runProviders(providers, (provider) => provider.searchOpenItems(input));
-    return { items: dedupeById(result.items as OpenItem[]).slice(0, input.limit), partial: result.partial, providerErrors: result.providerErrors };
+    return { items: dedupeById(result.items as OpenItem[]).slice(0, input.limit ?? 10), partial: result.partial, providerErrors: result.providerErrors };
   }
 }
