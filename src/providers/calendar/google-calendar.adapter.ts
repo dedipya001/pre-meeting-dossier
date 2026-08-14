@@ -2,6 +2,7 @@ import { GetUpcomingEventsInput, NormalizedEvent } from "../../domain/schemas/ev
 import { AccessTokenProvider } from "../../auth/access-token-provider.js";
 import { CalendarProvider } from "./calendar-provider.interface.js";
 import { BaseProvider } from "../provider.interface.js";
+import { inputLimit, inputString } from "../../utils/input.js";
 
 type GoogleCalendarEvent = {
   id: string;
@@ -48,15 +49,18 @@ export class GoogleCalendarAdapter implements BaseProvider, CalendarProvider {
 
   async getUpcomingEvents(input: GetUpcomingEventsInput): Promise<NormalizedEvent[]> {
     const now = new Date().toISOString();
+    const start = inputString(input.start);
+    const end = inputString(input.end);
+    const query = inputString(input.query);
     const params = new URLSearchParams({
       singleEvents: "true",
       orderBy: "startTime",
-      maxResults: String(input.limit),
-      timeMin: input.start ?? now
+      maxResults: String(inputLimit(input.limit)),
+      timeMin: start ?? now
     });
 
-    if (input.end) params.set("timeMax", input.end);
-    if (input.query) params.set("q", input.query);
+    if (end) params.set("timeMax", end);
+    if (query) params.set("q", query);
 
     const response = await this.request<GoogleCalendarEventsResponse>(`/calendars/${encodeURIComponent(this.options.calendarId)}/events?${params}`);
     return (response.items ?? []).map((event) => this.normalizeEvent(event));

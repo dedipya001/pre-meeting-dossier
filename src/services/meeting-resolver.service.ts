@@ -4,6 +4,7 @@ import { BaseProvider } from "../providers/provider.interface.js";
 import { ProviderRegistry } from "./provider-registry.service.js";
 import { runProviders } from "./provider-runner.service.js";
 import { byRecency, dedupeById } from "../utils/search.js";
+import { inputLimit } from "../utils/input.js";
 
 type CalendarCapableProvider = BaseProvider & CalendarProvider;
 
@@ -14,7 +15,7 @@ export class MeetingResolver {
     const providers = this.registry.findByCapability<CalendarCapableProvider>("calendar");
     const result = await runProviders(providers, (provider) => provider.getUpcomingEvents(input));
     return {
-      events: byRecency(dedupeById(result.items)).slice(0, input.limit ?? 10),
+      events: byRecency(dedupeById(result.items)).slice(0, inputLimit(input.limit)),
       partial: result.partial,
       providerErrors: result.providerErrors
     };

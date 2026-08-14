@@ -30,7 +30,10 @@ export function registerTools(server: McpServer, services: {
     title: "Get upcoming events",
     description: "Returns upcoming meetings and calendar events available to the authenticated user. Use this when identifying which meeting the user is referring to or preparing for an upcoming meeting.",
     inputSchema: GetUpcomingEventsInputSchema
-  }, async (input) => jsonContent(await services.meetingResolver.getUpcomingEvents(GetUpcomingEventsInputSchema.parse(input))));
+  }, async (input) => {
+    const parsed = GetUpcomingEventsInputSchema.parse(input);
+    return jsonContent(await services.meetingResolver.getUpcomingEvents(parsed));
+  });
 
   server.registerTool("get_event_context", {
     title: "Get event context",

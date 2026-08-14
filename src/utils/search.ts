@@ -1,6 +1,7 @@
 export function includesText(value: string | undefined, query: string | undefined): boolean {
-  if (!query) return true;
-  return (value ?? "").toLowerCase().includes(query.toLowerCase());
+  const normalizedQuery = normalizeSearchText(query);
+  if (!normalizedQuery) return true;
+  return normalizeSearchText(value).includes(normalizedQuery);
 }
 
 export function anyIncludes(values: Array<string | undefined>, query: string | undefined): boolean {
@@ -11,9 +12,15 @@ export function anyIncludes(values: Array<string | undefined>, query: string | u
 export function withinRange(timestamp: string | undefined, start?: string, end?: string): boolean {
   if (!timestamp) return true;
   const time = new Date(timestamp).getTime();
-  if (start && time < new Date(start).getTime()) return false;
-  if (end && time > new Date(end).getTime()) return false;
+  const startTime = start ? new Date(start).getTime() : undefined;
+  const endTime = end ? new Date(end).getTime() : undefined;
+  if (startTime && Number.isFinite(startTime) && time < startTime) return false;
+  if (endTime && Number.isFinite(endTime) && time > endTime) return false;
   return true;
+}
+
+export function normalizeSearchText(value: string | undefined): string {
+  return (value ?? "").toLowerCase().replace(/^["']|["']$/g, "").trim();
 }
 
 export function byRecency<T extends { updatedAt?: string; timestamp?: string; start?: string }>(items: T[]): T[] {

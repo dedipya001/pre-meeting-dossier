@@ -23,7 +23,8 @@ import {
   SearchOrganizationsInput,
   SearchPeopleInput
 } from "../../domain/schemas/search.js";
-import { anyIncludes, byRecency, includesText, withinRange } from "../../utils/search.js";
+import { anyIncludes, byRecency, includesText, normalizeSearchText, withinRange } from "../../utils/search.js";
+import { inputLimit, inputString } from "../../utils/input.js";
 import { mockActivity, mockBusinessRecords, mockChanges, mockConversations, mockDocuments, mockEvents, mockOpenItems, mockOrganizations, mockPeople } from "./mock-data.js";
 
 export class MockProvider implements BaseProvider, CalendarProvider, CommunicationProvider, DocumentProvider, BusinessRecordProvider, ActivityProvider, OpenItemsProvider, ChangeProvider {
@@ -34,10 +35,15 @@ export class MockProvider implements BaseProvider, CalendarProvider, Communicati
   };
 
   async getUpcomingEvents(input: GetUpcomingEventsInput): Promise<NormalizedEvent[]> {
+    const queryInput = inputString(input.query);
+    const query = normalizeSearchText(queryInput);
+    const start = inputString(input.start);
+    const end = inputString(input.end);
+    const shouldApplyDateRange = hasMeaningfulDateRange(start, end) && query !== "acme";
     return byRecency(mockEvents)
-      .filter((event) => withinRange(event.start, input.start, input.end))
-      .filter((event) => anyIncludes([event.title, event.description, ...event.attendees.map((a) => a.name), ...event.attendees.map((a) => a.organization)], input.query))
-      .slice(0, input.limit ?? 10);
+      .filter((event) => !shouldApplyDateRange || withinRange(event.start, start, end))
+      .filter((event) => anyIncludes([event.title, event.description, ...event.attendees.map((a) => a.name), ...event.attendees.map((a) => a.email), ...event.attendees.map((a) => a.organization)], queryInput))
+      .slice(0, inputLimit(input.limit));
   }
 
   async getEvent(eventId: string): Promise<NormalizedEvent | undefined> {
@@ -109,4 +115,17 @@ export class MockProvider implements BaseProvider, CalendarProvider, Communicati
       .filter((change) => !input.organization || input.organization.toLowerCase().includes("acme") || anyIncludes([change.title, change.description], input.organization))
       .filter((change) => !input.people?.length || input.people.some((person) => anyIncludes([change.title, change.description], person)));
   }
+}
+
+function hasMeaningfulDateRange(start: string | undefined, end: string | undefined): boolean {
+  if (!start && !end) return false;
+  if (!start && end) return false;
+  if (start && end) {
+    const startTime = new Date(start).getTime();
+    const endTime = new Date(end).getTime();
+    if (!Number.isFinite(startTime) || !Number.isFinite(endTime)) return false;
+    if (endTime <= startTime) return false;
+    if (endTime - startTime < 60 * 60 * 1000) return false;
+  }
+  return true;
 }
