@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { GetUpcomingEventsInputSchema } from "../src/domain/schemas/events.js";
 import { MockProvider } from "../src/providers/mock/mock-provider.js";
 
 describe("MockProvider", () => {
@@ -30,6 +31,42 @@ describe("MockProvider", () => {
   it("returns default upcoming events when Inspector sends an empty input object", async () => {
     const events = await provider.getUpcomingEvents({});
     expect(events).toHaveLength(1);
+    expect(events[0].title).toBe("CPQ Architecture Review");
+  });
+
+  it("keeps the Acme demo discoverable when Inspector sends string form values", async () => {
+    const events = await provider.getUpcomingEvents({
+      query: "\"Acme\"",
+      limit: "5",
+      end: "2026-08-14T06:40:00.000Z"
+    });
+    expect(events).toHaveLength(1);
+    expect(events[0].title).toBe("CPQ Architecture Review");
+  });
+
+  it("ignores non-meaningful Inspector date widget ranges for the demo provider", async () => {
+    const endOnly = await provider.getUpcomingEvents({
+      limit: "5",
+      end: "2026-08-14T07:00:00.000Z"
+    });
+    const zeroWidth = await provider.getUpcomingEvents({
+      limit: "5",
+      start: "2026-08-14T07:00:00.000Z",
+      end: "2026-08-14T07:00:00.000Z"
+    });
+
+    expect(endOnly[0].title).toBe("CPQ Architecture Review");
+    expect(zeroWidth[0].title).toBe("CPQ Architecture Review");
+  });
+
+  it("extracts JSON pasted into the Inspector query field", async () => {
+    const parsed = GetUpcomingEventsInputSchema.parse({
+      limit: 10,
+      query: "{   \"query\": \"Acme\",   \"limit\": 5 }"
+    });
+    const events = await provider.getUpcomingEvents(parsed);
+
+    expect(parsed).toMatchObject({ query: "Acme", limit: 5 });
     expect(events[0].title).toBe("CPQ Architecture Review");
   });
 });
